@@ -15,7 +15,7 @@ jobs:
               uses: actions/setup-node@v3
               with:
                   node-version: '18.x'
-                  cabhe: 'npm'
+                  cache: 'npm'
 
             - run: npm ci
 
@@ -27,3 +27,21 @@ jobs:
               with:
                 name: dist-production
                 path: dist
+
+    deploy-to-production:
+        needs: build-production-job
+        runs-on: ubuntu-latest
+        steps:
+            - name: Upload dist folder artif
+              uses: actions/download-artifact@v3
+              with:
+                name: dist-production
+                path: dist
+
+            - run: ls dist
+           # - run: ยิงไปที่ AWS 
+            - uses: SerhiiKa/VuePagesAction@1.0.4
+              with:
+                username: ${{ github.actor  }}
+                reponame: ${{ github.event.repository.name }}
+                token: ${{ secrets.GITHUB_TOKEN }}
